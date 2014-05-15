@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -25,6 +26,8 @@ import com.wanda.data.TransmissionData;
 @Path("login")
 public class Login {
 
+	static final Logger LOGGER = Logger.getLogger(Login.class);
+	
 	/**
 	 * Method handling HTTP GET requests. The returned object will be sent to
 	 * the client as "text/plain" media type.
@@ -41,6 +44,9 @@ public class Login {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String testPost(String inputJson) {
+		
+		LOGGER.info("This is a logging statement from log4j");
+		
 		// TransmissionData transmissionData = null;
 		MetaData metaData = null;
 		JsonFactory jsonFactory = new JsonFactory();
@@ -80,7 +86,7 @@ public class Login {
 		// e.printStackTrace();
 		// }
 
-		return "Got it! " + metaData.getUsername();
+		return "Got it! " + metaData.getSessionID();
 	}
 
 	private MetaData parseMetaData(JsonParser jsonParser)
