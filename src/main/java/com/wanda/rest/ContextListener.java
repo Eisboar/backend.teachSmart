@@ -7,6 +7,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 @WebListener("application context listener")
@@ -25,7 +26,9 @@ public class ContextListener implements ServletContextListener {
 				+ log4jConfigFile;
 
 		PropertyConfigurator.configure(fullPath);
-
+		
+		Logger LOGGER = Logger.getLogger(ContextListener.class);
+		LOGGER.debug("Log4j started");
 	}
 
 	@Override
