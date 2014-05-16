@@ -19,10 +19,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.wanda.data.MetaData;
 import com.wanda.data.TransmissionData;
+import com.wanda.json.JsonReader;
+import com.wanda.json.JsonWriter;
 
 /**
  * Root resource (exposed at "myresources" path)
  */
+
 @Path("login")
 public class Login {
 
@@ -40,72 +43,39 @@ public class Login {
 		return "Got it!";
 	}
 
+	/**
+	 * Login-Methode called by HTTP-POST ../login
+	 * @param inputJson, input string (JSON-object)
+	 * @return 
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String testPost(String inputJson) {
+	public String testPost(String inputJsonString) {
 		
-		LOGGER.info("This is a logging statement from log4j");
+		LOGGER.debug("login attempt, start parsing");
+		JsonWriter jsonWriter = new JsonWriter();
 		
-		// TransmissionData transmissionData = null;
+		if (inputJsonString == null || inputJsonString.equals("")){
+			// empty request
+			LOGGER.debug("POST-Request empty");
+			return jsonWriter.buildErrorMessage("Empty request");
+		}
+		
+		JsonReader jsonReader = new JsonReader();
 		MetaData metaData = null;
-		JsonFactory jsonFactory = new JsonFactory();
-		
-		
+
 		try {
-			JsonParser jsonParser = jsonFactory.createJsonParser(inputJson);
-			jsonParser.nextToken();
-			
-			while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-				  String fieldname = jsonParser.getCurrentName();
-				  jsonParser.nextToken();
-				  if (fieldname.equals("meta"))
-					  metaData = parseMetaData(jsonParser);
-			}
-			
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			metaData = jsonReader.parseLogin(inputJsonString);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.debug("Couldn't parse Login Informaation"+ e);
+			return jsonWriter.buildErrorMessage("Failed to parse login information");
 		}
+		
+		LOGGER.debug("Login attempt from user: "+metaData.getUsername());
+		
 
-		// ObjectMapper mapper = new ObjectMapper();
-		// try {
-		// transmissionData = mapper.readValue(inputJson,
-		// TransmissionData.class);
-		// } catch (JsonParseException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (JsonMappingException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-		return "Got it! " + metaData.getSessionID();
-	}
-
-	private MetaData parseMetaData(JsonParser jsonParser)
-			throws JsonParseException, IOException {
-		MetaData metaData = new MetaData();
-		while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-			String namefield = jsonParser.getCurrentName();
-			jsonParser.nextToken();
-			if ("username".equals(namefield)) {
-				metaData.setUsername(jsonParser.getText());
-			} else if ("password".equals(namefield)) {
-				metaData.setPassword(jsonParser.getText());
-			} else if ("sessionID".equals(namefield)) {
-				if (jsonParser.getCurrentToken() == JsonToken.VALUE_NULL)
-					metaData.setSessionID(null);
-				else 
-					metaData.setSessionID(jsonParser.getLongValue());
-			}
-		}
-		return metaData;
+		return "Got it! " + metaData.getUsername();
 	}
 }
