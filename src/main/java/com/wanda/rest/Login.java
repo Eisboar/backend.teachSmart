@@ -63,6 +63,7 @@ public class Login {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String testPost(String inputJsonString) {
 		
+		LOGGER.debug(inputJsonString);
 		LOGGER.debug("login attempt, start parsing");
 		JsonWriter jsonWriter = new JsonWriter();
 		
@@ -113,7 +114,7 @@ public class Login {
 			//read the resultset
 			if (resultSet.next()==false){
 				LOGGER.debug("failed login, wrong username/password");
-				return jsonWriter.buildErrorMessage("Failed to parse login information");
+				return jsonWriter.buildErrorMessage("failed login, wrong username/password");
 			} else {
 				userID = resultSet.getInt(1);
 			}
