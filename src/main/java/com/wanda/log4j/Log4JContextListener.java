@@ -1,4 +1,4 @@
-package com.wanda.rest;
+package com.wanda.log4j;
 
 import java.io.File;
 
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 @WebListener("application context listener")
-public class ContextListener implements ServletContextListener {
+public class Log4JContextListener implements ServletContextListener {
 
 	/**
 	 * Initialize log4j when the application is being started
@@ -27,7 +27,7 @@ public class ContextListener implements ServletContextListener {
 
 		PropertyConfigurator.configure(fullPath);
 		
-		Logger LOGGER = Logger.getLogger(ContextListener.class);
+		Logger LOGGER = Logger.getLogger(Log4JContextListener.class);
 		LOGGER.debug("Log4j started");
 	}
 
