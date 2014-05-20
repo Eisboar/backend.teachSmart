@@ -1,7 +1,15 @@
 package com.wanda.rest;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,6 +27,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.wanda.data.MetaData;
 import com.wanda.data.TransmissionData;
+import com.wanda.db.MySqlDataSource;
 import com.wanda.json.JsonReader;
 import com.wanda.json.JsonWriter;
 
@@ -40,7 +49,8 @@ public class Login {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getIt() {
-		return "Got it!";
+		
+			return ":-)";
 	}
 
 	/**
@@ -56,26 +66,63 @@ public class Login {
 		LOGGER.debug("login attempt, start parsing");
 		JsonWriter jsonWriter = new JsonWriter();
 		
-		if (inputJsonString == null || inputJsonString.equals("")){
-			// empty request
+		//check if request is empty
+		if (inputJsonString == null || inputJsonString.trim().equals("")){
 			LOGGER.debug("POST-Request empty");
 			return jsonWriter.buildErrorMessage("Empty request");
 		}
 		
+		//parse request
 		JsonReader jsonReader = new JsonReader();
 		MetaData metaData = null;
 
 		try {
 			metaData = jsonReader.parseLogin(inputJsonString);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			LOGGER.debug("Couldn't parse Login Informaation"+ e);
 			return jsonWriter.buildErrorMessage("Failed to parse login information");
 		}
 		
+		//check if login name or password are empty
+		if (metaData.getUsername()==null || metaData.getPassword()==null){
+			LOGGER.debug("login informayion not complete");
+			return jsonWriter.buildErrorMessage("Username or password not found");
+		}
+		
 		LOGGER.debug("Login attempt from user: "+metaData.getUsername());
 		
+		//check db for userdata
+	
+		PreparedStatement preparedStatement;
+		Connection connection;
+		ResultSet resultSet=null;
+		
+		int userID =-1;
+		
+		try{
+			connection = MySqlDataSource.getMySDataSource().getConnection();
+			String query= "SELECT ID FROM Users WHERE name = ? AND password = ?";
+			preparedStatement = connection.prepareStatement(query);
+			
+			//fill the preparedStatement with the userinformation
+			preparedStatement.setString(1, metaData.getUsername());
+			preparedStatement.setString(2, metaData.getPassword());
+			
+			resultSet = preparedStatement.executeQuery();
+			
+			//read the resultset
+			if (resultSet.next()==false){
+				LOGGER.debug("failed login, wrong username/password");
+				return jsonWriter.buildErrorMessage("Failed to parse login information");
+			} else {
+				userID = resultSet.getInt(1);
+			}
+		} catch (SQLException e){
+			e.printStackTrace();	
+		}
+		
+		//update last use
 
-		return "Got it! " + metaData.getUsername();
+		return "Got it! " + userID;
 	}
 }
