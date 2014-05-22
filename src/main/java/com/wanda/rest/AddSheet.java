@@ -23,13 +23,16 @@ import com.wanda.json.JsonWriter;
 @Path("addSheet")
 public class AddSheet {
 
-	static final Logger LOGGER = Logger.getLogger(Login.class);
+	static final Logger LOGGER = Logger.getLogger(AddSheet.class);
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public String onPost(String inputJsonString) {
 
+		//TODO: add sessions
+		
+		
 		LOGGER.debug(inputJsonString);
 		LOGGER.debug("sheet posted, start parsing");
 

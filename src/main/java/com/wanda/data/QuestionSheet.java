@@ -1,5 +1,6 @@
 package com.wanda.data;
 
+import java.sql.Timestamp;
 import java.util.Vector;
 
 /**
@@ -8,6 +9,10 @@ import java.util.Vector;
  *
  */
 public class QuestionSheet {
+
+	private int ID;
+	
+	private Timestamp createDate;
 
 	private String name = null;
 	private Vector<Question> questions = null;
@@ -41,5 +46,21 @@ public class QuestionSheet {
 			return questions.size();
 		else 
 			return 0;
+	}
+	
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int iD) {
+		ID = iD;
+	}
+
+	public Timestamp getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Timestamp createDate) {
+		this.createDate = createDate;
 	}
 }
