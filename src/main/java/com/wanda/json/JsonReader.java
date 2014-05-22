@@ -2,14 +2,12 @@ package com.wanda.json;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 
 import com.wanda.data.MetaData;
-import com.wanda.rest.Login;
 
 /**
  * Basic class to parse all incoming JsonString's into the proper Objects
@@ -19,7 +17,6 @@ import com.wanda.rest.Login;
 public class JsonReader {
 	
 	private JsonFactory jsonFactory;
-	private JsonParser jsonParser;
 	
 	/**
 	 * simple Constructor
