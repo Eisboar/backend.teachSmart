@@ -9,10 +9,11 @@ import java.util.Vector;
  */
 public class QuestionSheet {
 
-	private Vector<Question> questions;
+	private String name = null;
+	private Vector<Question> questions = null;
 	
 	public QuestionSheet(){
-		questions = new Vector<Question>();
+		//questions = new Vector<Question>();
 	}
 	
 	public QuestionSheet(Vector<Question> questions){
@@ -21,5 +22,24 @@ public class QuestionSheet {
 	
 	public Vector<Question> getQuestions(){
 		return questions;
+	}
+
+	public void setQuestions(Vector<Question> questions){
+		this.questions = questions;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public int getQuestionCount(){
+		if (questions!= null)
+			return questions.size();
+		else 
+			return 0;
 	}
 }

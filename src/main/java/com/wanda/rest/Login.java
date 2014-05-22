@@ -49,8 +49,8 @@ public class Login {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String testPost(String inputJsonString) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public String onPost(String inputJsonString) {
 		
 		LOGGER.debug(inputJsonString);
 		LOGGER.debug("login attempt, start parsing");
@@ -75,7 +75,7 @@ public class Login {
 		
 		//check if login name or password are empty
 		if (metaData.getUsername()==null || metaData.getPassword()==null){
-			LOGGER.debug("login informayion not complete");
+			LOGGER.debug("login information not complete");
 			return jsonWriter.buildErrorMessage("Username or password not found");
 		}
 		
