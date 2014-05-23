@@ -69,7 +69,7 @@ public class Login {
 		try {
 			metaData = jsonReader.parseLogin(inputJsonString);
 		} catch (IOException e) {
-			LOGGER.debug("Couldn't parse Login Informaation"+ e);
+			LOGGER.debug("Couldn't parse login information"+ e);
 			return jsonWriter.buildErrorMessage("Failed to parse login information");
 		}
 		

@@ -8,7 +8,11 @@ package com.wanda.data;
 public class Question {
 
 	private int position; // starting with 1!
+
 	private String questionText;
+	
+	public Question(){
+	}
 	
 	public Question(int position, String questionText) {
 		super();
@@ -20,6 +24,14 @@ public class Question {
 	}
 	public String getQuestionText() {
 		return questionText;
+	}
+	
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	public void setQuestionText(String questionText) {
+		this.questionText = questionText;
 	}
 
 	

@@ -56,6 +56,30 @@ public class JsonReader {
 	}
 	
 	/**
+	 * Method to parse the requested ID of the Questionsheet
+	 * @param requestJsonString
+	 * @return
+	 * @throws JsonParseException
+	 * @throws IOException
+	 */
+	public QuestionSheet parseQuestionSheetGetRequest(String requestJsonString) throws  JsonParseException, IOException{
+		QuestionSheet questionSheet = new QuestionSheet();
+		
+		JsonParser jsonParser = jsonFactory.createJsonParser(requestJsonString);
+		jsonParser.nextToken();
+		
+		while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+			String namefield = jsonParser.getCurrentName();
+			jsonParser.nextToken();
+			if ("id".equals(namefield)) {
+				questionSheet.setID(Integer.parseInt(jsonParser.getText()));
+			} 
+		}
+		
+		return questionSheet;
+	}
+	
+	/**
 	 * Method to parse the QuestionSheet out of a posted jsonstring
 	 * @param questionSheetJsonString
 	 * @return

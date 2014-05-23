@@ -99,7 +99,7 @@ public class AddSheet {
 	        }
 			
 //			//insert Questions
-	        query = "INSERT INTO Questions (questionsText, sheetID, position) VALUES (?, ?, ?)";
+	        query = "INSERT INTO Questions (questionText, sheetID, position) VALUES (?, ?, ?)";
 	        for(Question question: questionSheet.getQuestions()){
 	        	preparedStatement = connection.prepareStatement(query);
 	        	

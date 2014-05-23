@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.codehaus.jackson.JsonFactory;	
 import org.codehaus.jackson.JsonGenerator;
 
+import com.wanda.data.Question;
 import com.wanda.data.QuestionSheet;
 
 /**
@@ -71,5 +72,35 @@ public class JsonWriter {
 		
 		return stringWriter.toString();
 	}
+	
+	public String buildQuestionSheet(QuestionSheet questionSheet){
+		StringWriter stringWriter = new StringWriter();
+		try{ 
+			jsonGenerator = jsonFactory.createJsonGenerator(stringWriter);
+			jsonGenerator.writeStartObject();
+			
+			jsonGenerator.writeStringField("ID",String.valueOf(questionSheet.getID()));
+			jsonGenerator.writeStringField("name", questionSheet.getName());
+			jsonGenerator.writeStringField("create_date", questionSheet.getCreateDate().toString());
+			
+			jsonGenerator.writeFieldName("questions");
+			jsonGenerator.writeStartArray();
+			for (Question question: questionSheet.getQuestions()){
+				jsonGenerator.writeStartObject();
+				jsonGenerator.writeStringField("position",String.valueOf(question.getPosition()));
+				jsonGenerator.writeStringField("questionText",(question.getQuestionText()));
+				jsonGenerator.writeEndObject();
+			}
+			jsonGenerator.writeEndArray();
+			
+			jsonGenerator.writeEndObject();
+			jsonGenerator.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return stringWriter.toString();
+	}
+	
 	
 }
