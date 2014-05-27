@@ -7,8 +7,11 @@ import java.util.Vector;
 import org.codehaus.jackson.JsonFactory;	
 import org.codehaus.jackson.JsonGenerator;
 
+import com.wanda.data.MultipleChoiceQuestion;
 import com.wanda.data.Question;
+import com.wanda.data.QuestionAnswer;
 import com.wanda.data.QuestionSheet;
+import com.wanda.data.QuestionType;
 
 /**
  * Class to write all necessary json-data out of the used data objects utilizing the jackson 
@@ -77,8 +80,11 @@ public class JsonWriter {
 		StringWriter stringWriter = new StringWriter();
 		try{ 
 			jsonGenerator = jsonFactory.createJsonGenerator(stringWriter);
-			jsonGenerator.writeStartObject();
 			
+			jsonGenerator.writeStartObject();
+			jsonGenerator.writeStringField("status","ok");
+			jsonGenerator.writeFieldName("questionSheet");
+			jsonGenerator.writeStartObject();
 			jsonGenerator.writeStringField("ID",String.valueOf(questionSheet.getID()));
 			jsonGenerator.writeStringField("name", questionSheet.getName());
 			jsonGenerator.writeStringField("create_date", questionSheet.getCreateDate().toString());
@@ -87,12 +93,24 @@ public class JsonWriter {
 			jsonGenerator.writeStartArray();
 			for (Question question: questionSheet.getQuestions()){
 				jsonGenerator.writeStartObject();
+				jsonGenerator.writeStringField("type",String.valueOf(question.getType().toString().toLowerCase()));
 				jsonGenerator.writeStringField("position",String.valueOf(question.getPosition()));
 				jsonGenerator.writeStringField("questionText",(question.getQuestionText()));
+				if (question.getType()==QuestionType.MULTIPLE_CHOICE){
+					jsonGenerator.writeFieldName("answers");
+					jsonGenerator.writeStartArray();
+					for (QuestionAnswer answer: ((MultipleChoiceQuestion)question).getAnswers()){
+						jsonGenerator.writeStartObject();
+						jsonGenerator.writeStringField("position",String.valueOf(answer.getPosition()));
+						jsonGenerator.writeStringField("answerText",(answer.getAnswerText()));
+						jsonGenerator.writeEndObject();
+					}
+					jsonGenerator.writeEndArray();
+				}
 				jsonGenerator.writeEndObject();
 			}
 			jsonGenerator.writeEndArray();
-			
+			jsonGenerator.writeEndObject();
 			jsonGenerator.writeEndObject();
 			jsonGenerator.close();
 		} catch (IOException e) {

@@ -5,13 +5,20 @@ package com.wanda.data;
  * @author sash
  *
  */
-public class Question {
+public abstract class Question {
 
 	private int position; // starting with 1!
 
 	private String questionText;
 	
-	public Question(){
+	private QuestionType type;
+	
+	public QuestionType getType() {
+		return type;
+	}
+
+	public Question(QuestionType type){
+		this.type=type;
 	}
 	
 	public Question(int position, String questionText) {

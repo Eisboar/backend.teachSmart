@@ -14,8 +14,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 
+import com.wanda.data.MultipleChoiceQuestion;
 import com.wanda.data.Question;
+import com.wanda.data.QuestionAnswer;
 import com.wanda.data.QuestionSheet;
+import com.wanda.data.QuestionType;
 import com.wanda.db.MySqlDataSource;
 import com.wanda.json.JsonReader;
 import com.wanda.json.JsonWriter;
@@ -99,17 +102,42 @@ public class AddSheet {
 	        }
 			
 //			//insert Questions
-	        query = "INSERT INTO Questions (questionText, sheetID, position) VALUES (?, ?, ?)";
+	        query = "INSERT INTO Questions (questionText, sheetID, position, type) VALUES (?, ?, ?, ?)";
 	        for(Question question: questionSheet.getQuestions()){
-	        	preparedStatement = connection.prepareStatement(query);
+	        	preparedStatement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 	        	
 	        	//fill the preparedStatement with the sheet name
 				preparedStatement.setString(1,question.getQuestionText());
 				preparedStatement.setInt(2,sheetID);
 				preparedStatement.setInt(3,question.getPosition());
-				
+				preparedStatement.setString(4, question.getType().toString());
 				preparedStatement.executeUpdate();
+				
+				if (question.getType()==QuestionType.MULTIPLE_CHOICE){
+					LOGGER.debug("insert answers");
+					int questionID = -1;
+					resultSet = preparedStatement.getGeneratedKeys();
+					if (resultSet.next()) {
+			        	questionID = resultSet.getInt(1);
+			        } else {
+			        	LOGGER.debug("question id not found");
+						return jsonWriter.buildErrorMessage("error: couldn't insert answer"
+								+ " (could not optain questionID)");
+			        }
+					String insertAnswerQuery = "INSERT INTO Answers (questionID, position, answerText) VALUES (?, ?, ?)";
+					for (QuestionAnswer answer: ((MultipleChoiceQuestion) question).getAnswers()){
+						LOGGER.debug("insert answers");
+						PreparedStatement insertAnswerPreparedStatment = connection.prepareStatement(insertAnswerQuery);
+						
+						insertAnswerPreparedStatment.setInt(1, questionID);
+						insertAnswerPreparedStatment.setInt(2, answer.getPosition());
+						insertAnswerPreparedStatment.setString(3, answer.getAnswerText());
+						insertAnswerPreparedStatment.executeUpdate();
+					}
+				
+				}
 	        }
+	        
 	        
 		} catch (SQLException e){
 			int errorcode = e.getErrorCode();
@@ -127,4 +155,5 @@ public class AddSheet {
 
 		return "success";
 	}
+
 }
