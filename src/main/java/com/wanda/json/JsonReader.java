@@ -15,6 +15,7 @@ import com.wanda.data.Question;
 import com.wanda.data.QuestionAnswer;
 import com.wanda.data.QuestionCreator;
 import com.wanda.data.QuestionSheet;
+import com.wanda.data.QuestionType;
 import com.wanda.rest.Login;
 
 /**
@@ -132,9 +133,17 @@ public class JsonReader {
 		// get into the array
 		jsonParser.nextToken();
 		// parse questions until end of array is reached
-		Question question = null;
+		Question question= null;
+		Vector<QuestionAnswer> answers = null;
+		String questionText =null ;
 		while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
 			// LOGGER.debug(jsonParser.getText());
+			if (jsonParser.getCurrentToken() == JsonToken.END_OBJECT){ 
+				question.setQuestionText(questionText);
+				if (question.getType()== QuestionType.MULTIPLE_CHOICE){
+					((MultipleChoiceQuestion) question).setAnswers(answers);
+				}
+			}
 			String namefield = jsonParser.getCurrentName();
 			if ("type".equals(namefield)) {
 				jsonParser.nextToken();
@@ -145,15 +154,14 @@ public class JsonReader {
 				// jump to the question
 				jsonParser.nextToken();
 				LOGGER.debug(jsonParser.getText());
-				question.setQuestionText(jsonParser.getText());
+				//question.setQuestionText(jsonParser.getText());
+				questionText = jsonParser.getText();
 				// questions.addElement(new
 				// Question(++questionsCounter,jsonParser.getText()));
 			} else if ("answers".equals(namefield)) {
-				((MultipleChoiceQuestion) question)
-						.setAnswers(parseAnswers(jsonParser));
+				answers = parseAnswers(jsonParser);
 			}
-			// skip end of object
-			// jsonParser.nextToken();
+			
 		}
 		// jsonParser.nextToken();
 		LOGGER.debug(questionsCounter + " Questions parsed");

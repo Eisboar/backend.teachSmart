@@ -5,7 +5,7 @@ package com.wanda.data;
  * @author sash
  *
  */
-public abstract class Question {
+public class Question {
 
 	private int position; // starting with 1!
 
@@ -17,6 +17,10 @@ public abstract class Question {
 		return type;
 	}
 
+	
+	public Question() {
+	}
+	
 	public Question(QuestionType type){
 		this.type=type;
 	}
@@ -39,6 +43,14 @@ public abstract class Question {
 
 	public void setQuestionText(String questionText) {
 		this.questionText = questionText;
+	}
+	
+	public void setType(String typeString){
+		if (typeString.toLowerCase().equals("rating")){
+			type = QuestionType.RATING;
+		} else if (typeString.toLowerCase().equals("multiple_choice")){
+			type = QuestionType.MULTIPLE_CHOICE;
+		}
 	}
 
 	

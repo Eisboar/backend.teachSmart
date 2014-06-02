@@ -6,6 +6,7 @@ public class MultipleChoiceQuestion extends Question {
 
 	private Vector<QuestionAnswer> answers;
 	
+	
 	public MultipleChoiceQuestion(){
 		super(QuestionType.MULTIPLE_CHOICE);
 	}

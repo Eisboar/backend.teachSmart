@@ -38,7 +38,7 @@ public class Login {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getIt() {
-		
+			LOGGER.debug("yeah");
 			return ":-)";
 	}
 
