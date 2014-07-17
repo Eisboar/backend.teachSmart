@@ -1,8 +1,11 @@
-package com.wanda.data;
+package com.wanda.data.questionsheet;
+
+import java.util.Vector;
+
 
 /**
  * data object representing a question
- * @author sash
+ * @author Sascha Haseloff
  *
  */
 public class Question {
@@ -13,6 +16,18 @@ public class Question {
 	
 	private QuestionType type;
 	
+	private Vector<UserAnswer> userAnswers = null;
+	
+	public Vector<UserAnswer> getUserAnswers() {
+		return userAnswers;
+	}
+
+
+	public void setUserAnswers(Vector<UserAnswer> userAnswers) {
+		this.userAnswers = userAnswers;
+	}
+
+
 	public QuestionType getType() {
 		return type;
 	}

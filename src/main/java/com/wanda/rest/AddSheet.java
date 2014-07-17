@@ -14,11 +14,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 
-import com.wanda.data.MultipleChoiceQuestion;
-import com.wanda.data.Question;
-import com.wanda.data.QuestionAnswer;
-import com.wanda.data.QuestionSheet;
-import com.wanda.data.QuestionType;
+import com.wanda.data.questionsheet.MultipleChoiceQuestion;
+import com.wanda.data.questionsheet.Question;
+import com.wanda.data.questionsheet.QuestionAnswer;
+import com.wanda.data.questionsheet.QuestionSheet;
+import com.wanda.data.questionsheet.QuestionType;
 import com.wanda.db.MySqlDataSource;
 import com.wanda.json.JsonReader;
 import com.wanda.json.JsonWriter;
@@ -75,14 +75,15 @@ public class AddSheet {
 		//insert Questionsheet into DB
 		
 		PreparedStatement preparedStatement;
-		Connection connection;
+		Connection connection = null;
 		ResultSet resultSet=null;
 		int sheetID = -1;
 		
 		try{
 			
 			connection = MySqlDataSource.getMySDataSource().getConnection();
-			//insetr the questionsheet
+			connection.setAutoCommit(false);
+			//insert the questionsheet
 			String query= "INSERT INTO Sheets (name) VALUES (?)";
 			preparedStatement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 			
@@ -137,12 +138,18 @@ public class AddSheet {
 				
 				}
 	        }
-	        
+	        connection.commit();
 	        
 		} catch (SQLException e){
 			int errorcode = e.getErrorCode();
 			if (errorcode == 1062){
 				LOGGER.debug("name of the question sheet already used");
+				try {
+	                connection.rollback();
+	                LOGGER.debug("rollback success");
+	            } catch(SQLException e2) {
+	                e2.printStackTrace();;
+	            }
 				return jsonWriter.buildErrorMessage("name of the question sheet already used"
 						+ " please choose another");
 		    }

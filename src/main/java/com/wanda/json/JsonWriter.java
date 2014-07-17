@@ -7,11 +7,14 @@ import java.util.Vector;
 import org.codehaus.jackson.JsonFactory;	
 import org.codehaus.jackson.JsonGenerator;
 
-import com.wanda.data.MultipleChoiceQuestion;
-import com.wanda.data.Question;
-import com.wanda.data.QuestionAnswer;
-import com.wanda.data.QuestionSheet;
-import com.wanda.data.QuestionType;
+import com.wanda.data.questionsheet.MultipleChoiceAnswer;
+import com.wanda.data.questionsheet.MultipleChoiceQuestion;
+import com.wanda.data.questionsheet.Question;
+import com.wanda.data.questionsheet.QuestionAnswer;
+import com.wanda.data.questionsheet.QuestionSheet;
+import com.wanda.data.questionsheet.QuestionType;
+import com.wanda.data.questionsheet.RatingQuestionAnswer;
+import com.wanda.data.questionsheet.UserAnswer;
 
 /**
  * Class to write all necessary json-data out of the used data objects utilizing the jackson 
@@ -106,6 +109,33 @@ public class JsonWriter {
 						jsonGenerator.writeEndObject();
 					}
 					jsonGenerator.writeEndArray();
+					if (question.getUserAnswers()!=null){
+						jsonGenerator.writeFieldName("user_answers");
+						jsonGenerator.writeStartArray();
+						for (UserAnswer userAnswer: question.getUserAnswers()){
+							jsonGenerator.writeStartObject();
+							jsonGenerator.writeStringField("position",
+									String.valueOf(((MultipleChoiceAnswer)userAnswer).getAnswerPosition()));
+							jsonGenerator.writeStringField("count",
+									String.valueOf((userAnswer.getCount())));
+							jsonGenerator.writeEndObject();
+						}
+						jsonGenerator.writeEndArray();
+					}
+				} else if (question.getType()==QuestionType.RATING){
+					if (question.getUserAnswers()!=null){
+						jsonGenerator.writeFieldName("user_answers");
+						jsonGenerator.writeStartArray();
+						for (UserAnswer userAnswer: question.getUserAnswers()){
+							jsonGenerator.writeStartObject();
+							jsonGenerator.writeStringField("rating",
+									String.valueOf(((RatingQuestionAnswer)userAnswer).getRating()));
+							jsonGenerator.writeStringField("count",
+									String.valueOf((userAnswer.getCount())));
+							jsonGenerator.writeEndObject();
+						}
+						jsonGenerator.writeEndArray();
+					}
 				}
 				jsonGenerator.writeEndObject();
 			}

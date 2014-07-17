@@ -14,14 +14,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonParseException;
 
-import com.wanda.data.MultipleChoiceQuestion;
-import com.wanda.data.Question;
-import com.wanda.data.QuestionAnswer;
-import com.wanda.data.QuestionCreator;
-import com.wanda.data.QuestionSheet;
-import com.wanda.data.QuestionType;
+import com.wanda.data.questionsheet.MultipleChoiceAnswer;
+import com.wanda.data.questionsheet.MultipleChoiceQuestion;
+import com.wanda.data.questionsheet.Question;
+import com.wanda.data.questionsheet.QuestionAnswer;
+import com.wanda.data.questionsheet.QuestionCreator;
+import com.wanda.data.questionsheet.QuestionSheet;
+import com.wanda.data.questionsheet.QuestionType;
+import com.wanda.data.questionsheet.RatingQuestionAnswer;
+import com.wanda.data.questionsheet.UserAnswer;
 import com.wanda.db.MySqlDataSource;
 import com.wanda.json.JsonReader;
 import com.wanda.json.JsonWriter;
@@ -78,15 +80,19 @@ public class GetSheet {
 					questionSheet.setName(resultSet.getString(1));
 					questionSheet.setCreateDate(resultSet.getTimestamp(2));
 				}
+			
 			//read the resultset
 			Vector<Question> questions  = new Vector<Question>();
 			do {
 				Question question = QuestionCreator.createQuestion(resultSet.getString(5));
 				question.setQuestionText(resultSet.getString(3));
 				question.setPosition(resultSet.getInt(4));
+				int questionID = resultSet.getInt(6);
 				if (question.getType()==QuestionType.MULTIPLE_CHOICE){
-					getAnswers(question, resultSet.getInt(6));
+					getAnswers(question, questionID);
 				}
+				if (questionSheet.getAnswerRequestType()!=null)
+					question.setUserAnswers(retrieveUserAnswers(question, questionID));
 				questions.add(question);
 			} while (resultSet.next()!=false);
 			
@@ -125,4 +131,46 @@ public class GetSheet {
 		((MultipleChoiceQuestion) question).setAnswers(answers);
 	}
 	
+	private Vector<UserAnswer> retrieveUserAnswers (Question question, int questionID) throws SQLException{
+		Vector<UserAnswer> userAnswers = new Vector<UserAnswer>();
+		if (question.getType()==QuestionType.MULTIPLE_CHOICE){
+			String query = "SELECT position, COUNT(*) AS count "
+					+ "FROM `MultipleChoiceAnswers` "
+					+ "WHERE questionID = ? "
+					+ "GROUP by position "
+					+ "ORDER BY position ASC";
+			
+			ResultSet resultSet = exectueQuery(query, questionID);
+			
+			while (resultSet.next()){
+				MultipleChoiceAnswer answer = new MultipleChoiceAnswer();
+				answer.setAnswerPosition(resultSet.getInt(1));
+				answer.setCount(resultSet.getInt(2));
+				userAnswers.add(answer);
+			}
+		} else if (question.getType()==QuestionType.RATING){
+			String query = "SELECT rating, COUNT(*) AS count "
+					+ "FROM `RatingAnswers` "
+					+ "WHERE questionID = ? "
+					+ "GROUP by rating "
+					+ "ORDER BY rating ASC";
+			
+			ResultSet resultSet = exectueQuery(query, questionID);
+			
+			while (resultSet.next()){
+				RatingQuestionAnswer answer = new RatingQuestionAnswer();
+				answer.setRating(resultSet.getInt(1));
+				answer.setCount(resultSet.getInt(2));
+				userAnswers.add(answer);
+			}
+		}
+		return userAnswers;
+	}
+	
+	private ResultSet exectueQuery(String query, int questionID) throws SQLException{
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
+		preparedStatement.setInt(1, questionID);
+		
+		return preparedStatement.executeQuery();
+	}
 }

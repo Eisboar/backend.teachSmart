@@ -1,6 +1,22 @@
-package com.wanda.data;
+package com.wanda.data.questionsheet;
+
+/**
+ * simple class, representing the answers of a multiple choice question
+ * @author Sascha Haseloff <sascha.haseloff@gmail.com>
+ *
+ */
 
 public class QuestionAnswer {
+
+	public QuestionType type;
+	
+	public QuestionType getType() {
+		return type;
+	}
+
+	public void setType(QuestionType type) {
+		this.type = type;
+	}
 
 	public QuestionAnswer(){
 		

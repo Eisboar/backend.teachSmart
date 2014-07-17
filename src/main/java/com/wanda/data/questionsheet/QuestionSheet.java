@@ -1,4 +1,4 @@
-package com.wanda.data;
+package com.wanda.data.questionsheet;
 
 import java.sql.Timestamp;
 import java.util.Vector;
@@ -11,12 +11,19 @@ import java.util.Vector;
 public class QuestionSheet {
 
 	private int ID;
-	
 	private Timestamp createDate;
-
 	private String name = null;
 	private Vector<Question> questions = null;
+	private AnswerRequestType answerRequestType = null;
 	
+	public AnswerRequestType getAnswerRequestType() {
+		return answerRequestType;
+	}
+
+	public void setAnswerRequestType(AnswerRequestType answerRequestType) {
+		this.answerRequestType = answerRequestType;
+	}
+
 	public QuestionSheet(){
 		//questions = new Vector<Question>();
 	}

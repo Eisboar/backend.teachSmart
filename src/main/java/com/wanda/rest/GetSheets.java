@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 
-import com.wanda.data.QuestionSheet;
+import com.wanda.data.questionsheet.QuestionSheet;
 import com.wanda.db.MySqlDataSource;
 import com.wanda.json.JsonWriter;
 

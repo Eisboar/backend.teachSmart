@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import com.wanda.rest.Login;
 
 /**
- * Getter Class to lokkup the the DBsource form the defined name (JNDI)
+ * Getter Class to lookup the the DBsource form the defined name (JNDI)
  * @author Sascha Haseloff
  */
 public class MySqlDataSource{
@@ -26,6 +26,7 @@ public class MySqlDataSource{
 		
 		//check if the DataSource is already created
 		if (mySqlDataSource!=null)
+			
 			return mySqlDataSource;
 		
 		try{
